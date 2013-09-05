@@ -1,8 +1,12 @@
 package com.codepath.gridimagesearch;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -16,6 +20,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 public class SearchOptionsActivity extends Activity implements OnItemSelectedListener, OnEditorActionListener, OnClickListener {
 	private Spinner imgSizeSpinner;
@@ -33,6 +38,14 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
     private String selectedSite;
     
     private Button saveButton;
+    
+    SharedPreferences prefs;
+    Editor edits;
+    
+    private static final String IMG_SIZE_PREFERENCE_KEY = "isk";
+    private static final String COLOR_PREFERENCE_KEY = "ck";
+    private static final String IMG_TYPE_PREFERENCE_KEY = "itk";
+    private static final String SITE_PREFERENCE_KEY = "sk";
     
     // imgSize obtained by implementing OnItemSelectedListener's onItemSelected(...) method 
     public void setSelectedImgSize(Object imgSize) {
@@ -70,6 +83,18 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search_options);
 		
+		// get preferences hash from disk that you persisted last time you were on this page and clicked "SAVE"
+		prefs = getSharedPreferences("view", 0);
+		edits = prefs.edit();
+		// setting default values to "" so search activity 
+		String lastSelectedImgSizeStr = prefs.getString(IMG_SIZE_PREFERENCE_KEY, "");
+		String lastSelectedColorStr = prefs.getString(COLOR_PREFERENCE_KEY, "");
+		String lastSelectedImgTypeStr = prefs.getString(IMG_TYPE_PREFERENCE_KEY, "");
+		String lastSelectedSiteStr = prefs.getString(SITE_PREFERENCE_KEY, "");
+		ArrayList<String> resourceForArrayAdapter = new ArrayList<String>();
+		resourceForArrayAdapter.add(lastSelectedImgSizeStr);
+		resourceForArrayAdapter.add(lastSelectedColorStr);
+		resourceForArrayAdapter.add(lastSelectedImgTypeStr);
 		/* 1.  Get spinner object from the associated layout
 		 * 2.  Declare adapter
 		 * 3.  Use adapter to call setDropDownViewResource(<layout_type>)
@@ -85,6 +110,7 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
 				                                    android.R.layout.simple_spinner_item);
 		imgSizeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		imgSizeSpinner.setAdapter(imgSizeAdapter);
+		imgSizeSpinner.setSelection(imgSizeAdapter.getPosition(lastSelectedImgSizeStr));
 		imgSizeSpinner.setOnItemSelectedListener(this);
 		
 		colorSpinner = (Spinner)findViewById(R.id.colorSpinner_ID);
@@ -93,6 +119,7 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
 				                                  android.R.layout.simple_spinner_dropdown_item);
 		colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		colorSpinner.setAdapter(colorAdapter);
+		colorSpinner.setSelection(colorAdapter.getPosition(lastSelectedColorStr));
 		colorSpinner.setOnItemSelectedListener(this);
 
 		imgTypeSpinner = (Spinner)findViewById(R.id.imgTypeSpinner_ID);
@@ -101,9 +128,11 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
 				                                  android.R.layout.simple_spinner_dropdown_item);
 		imgTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		imgTypeSpinner.setAdapter(imgTypeAdapter);
+		imgTypeSpinner.setSelection(imgTypeAdapter.getPosition(lastSelectedImgTypeStr));
 		imgTypeSpinner.setOnItemSelectedListener(this);
 		
 		siteTextField = (EditText)findViewById(R.id.siteTextField_ID);
+		siteTextField.setText(lastSelectedSiteStr);
         siteTextField.setOnEditorActionListener(this);
 		
 		saveButton = (Button)findViewById(R.id.saveButtonID);
@@ -174,6 +203,15 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
 	    intent.putExtra("writtenSite", selectedSite);
 	    setResult(RESULT_OK, intent); 
 	    super.finish();
+	    
+	    /* persist the preferences to disk so that when you come back to this activity they're still here */
+	    edits.putString(IMG_SIZE_PREFERENCE_KEY, selectedImgSizeStr);
+	    edits.putString(COLOR_PREFERENCE_KEY, selectedColorStr);
+	    edits.putString(IMG_TYPE_PREFERENCE_KEY, selectedImgTypeStr);
+	    edits.putString(SITE_PREFERENCE_KEY, selectedSite);
+	    edits.commit();
+	    Toast.makeText(this, "Persisted!", Toast.LENGTH_SHORT).show();
+	    
 	}
 
 	

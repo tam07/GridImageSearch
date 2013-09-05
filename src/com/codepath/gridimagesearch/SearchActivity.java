@@ -47,13 +47,13 @@ public class SearchActivity extends Activity {
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	// TODO Auto-generated method stub
-    	//super.onActivityResult(requestCode, resultCode, data);
-    	
+    	/*TODO Auto-generated method stub
+    	super.onActivityResult(requestCode, resultCode, data);*/
     	
     	if (resultCode == RESULT_OK && requestCode == REQUEST_CODE)
     	{
     		/* GETTING search options from SearchOptionsActivity bundle */
+            // don't use getIntent().getStringExtra
     		imgSize = data.getStringExtra("selectedImgSize");
     		color = data.getStringExtra("selectedColor");
     		imgType = data.getStringExtra("selectedImgType");
@@ -61,16 +61,21 @@ public class SearchActivity extends Activity {
     	}
     }
     
-    
+	
+	public void setupViews() {
+		etQuery = (EditText) findViewById(R.id.etQuery);
+		gvResults = (GridView) findViewById(R.id.gvResults);
+		btnSearch = (Button) findViewById(R.id.btnSearch);
+		btnLoadMore = (Button) findViewById(R.id.btnLoadMore);
+	}
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
 		setupViews();
-		
-		//imgSize = getIntent().getStringExtra("imageSize");
-		
-		
+				
 		imageAdapter = new ImageResultArrayAdapter(this, imageResults);
 		gvResults.setAdapter(imageAdapter);
 		gvResults.setOnItemClickListener(new OnItemClickListener() {
@@ -82,13 +87,11 @@ public class SearchActivity extends Activity {
 				ImageResult imageResult = imageResults.get(position);
 				i.putExtra("result", imageResult);
 				startActivity(i);
-
-				// CODING INSTRUCTIONS: now go to activity you want to display, ImageDisplayActivity
-			}
-			
+			}	
 		});
 	}
 
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -96,6 +99,7 @@ public class SearchActivity extends Activity {
 	
 		return true;
 	}
+	
 	
 	// THROUGH THE XML, android:onClick in menu dir-->search.xml
 	public void onSettingsAction(MenuItem mi) {
@@ -106,69 +110,71 @@ public class SearchActivity extends Activity {
 		startActivityForResult(i, REQUEST_CODE);
 	}
 	
-	public void setupViews() {
-		etQuery = (EditText) findViewById(R.id.etQuery);
-		gvResults = (GridView) findViewById(R.id.gvResults);
-		btnSearch = (Button) findViewById(R.id.btnSearch);
-		btnLoadMore = (Button) findViewById(R.id.btnLoadMore);
-	}
 	
-	// display images starting at index 0 ALWAYS
+	// Event handled by assoc layout's Search button via onClick.  This method display images starting at index 0 ALWAYS
 	public void onImageSearch(View v) {
 		/* the first time search is pressed, this variable doesn't matter.  But if LoadMore
 		 * was pressed, then search is pressed after, this resets us to have LoadMore
 		 * work/paginate correctly in the future
 		 */
-		numImgsLoaded = 0;
-		String query = etQuery.getText().toString();
-		String encodedSearchTerm = Uri.encode(query);
-		Toast.makeText(this, "Searching for " + query, Toast.LENGTH_SHORT).show();
-		
-		// https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=android gives a proper response
-		
-		String requestStr = "https://ajax.googleapis.com/ajax/services/search/images?rsz=" + NUM_RESULTS + "&start=0&v=1.0";
-		
-		
-		/* upon return to the Search activity, onCreate gets called and we ingest the bundle data into our instance variables
-		 * if the option was set, it won't be "".  add "&imgsz=<imgSize>" to the request string */
-		if(!imgSize.equals(""))
-		    requestStr+= "&imgsz=" + imgSize;
-		if(!color.equals(""))
-			requestStr+="&imgcolor=" + color;
-		if(!imgType.equals(""))
-			requestStr+="&imgtype=" + imgType;
-		if(site != null)
-			requestStr+="&as_sitesearch=" + site;
-		
-		// add the query string to the request string
-		requestStr+= "&q=" + encodedSearchTerm;
-		System.out.println("The request str: " + requestStr);
+		numImgsLoaded = 0;		
+
+		// get the request str, specify that a search, not a "load more" was performed
+		String requestStr = getRequestStringHelper(false);
+		System.out.println("IN onImageSearch EVENT HANDLER, directed by xml onClick: " + requestStr);
 		loadImagesHelper(requestStr);
-		/* gives null response
-		 * String requestStr = "https://ajax.googleapis.com/ajax/services/search/images?rsz=&&start=0&v=1.0&q=" + encodedSearchTerm;
-		 */
-		/*String requestStr = "https://ajax.googleapis.com/ajax/services/search/images?rsz=8&start=0&v=1.0&imgsz=" +
-		                    imgSize + "&as_sitesearch=flickr.com&q=" + encodedSearchTerm;*/
-	} //close onImageSearchView
+	} 
 	
 	
-	// displays the next 8 images, "paginating" our results after pressing Load More
+	/* Event handled by assoc layout's "Load More" button via onClick.  Displays the next 8 images, "paginating" our 
+	 * results
+	 */
 	public void onLoadMoreImages(View v) {
-		String query = etQuery.getText().toString();
-		String encodedSearchTerm = Uri.encode(query);
-		Toast.makeText(this, "Loading " + query, Toast.LENGTH_SHORT).show();
 		// user presses Load More without a Search Press
 		if(numImgsLoaded == 0)
 			onImageSearch(v);
 		// otherwise search has been pressed at least once
 		else
 		{
-			String requestStr = "https://ajax.googleapis.com/ajax/services/search/images?rsz=" +
-		                        NUM_RESULTS + "&start=" + numImgsLoaded + "&v=1.0" + "&q=" + encodedSearchTerm;
+			String requestStr = getRequestStringHelper(true);
+			System.out.println("IN onLoadMoreImages EVENT HANDLER, directed by xml onClick: " + requestStr);
 			loadImagesHelper(requestStr);
 		}	
 	}
 	 
+	public String getRequestStringHelper(boolean fromOnLoadMore)
+	{
+		String gSearchStr = etQuery.getText().toString();
+		String encodedSearchTerm = Uri.encode(gSearchStr);
+		String functionality = "";
+		
+		if(fromOnLoadMore)
+		    functionality = "Loading";
+		else
+			functionality = "Searching";
+		
+		Toast.makeText(this, functionality + " " + gSearchStr, Toast.LENGTH_SHORT).show();
+		
+		String requestStr = "https://ajax.googleapis.com/ajax/services/search/images?rsz=" + NUM_RESULTS + 
+				            "&start=" + numImgsLoaded + "&v=1.0";
+		
+		/* if search filter activity was not visited, imgSize is null.  Otherwise, if it was visited and if any filters
+		 * were specified, add them to the request string.  add "&imgsz=<imgSize>" to the request string */
+		if(imgSize != null && !imgSize.equals(""))
+		    requestStr+= "&imgsz=" + imgSize;
+		if(color != null && !color.equals(""))
+			requestStr+="&imgcolor=" + color;
+		if(imgType != null && !imgType.equals(""))
+			requestStr+="&imgtype=" + imgType;
+		if(site != null && site != "")
+			requestStr+="&as_sitesearch=" + site;
+		
+		// append request string with google search term
+		requestStr+="&q=" + encodedSearchTerm;
+		
+		return requestStr;
+	}
+	
 	
 	/* sends the http GET and displays the images, the type of images returned will depend
 	 * on whether filters were set or not(as seen in the requestStr)
@@ -204,5 +210,4 @@ public class SearchActivity extends Activity {
 		// update running total of images loaded so far
 		numImgsLoaded+=NUM_RESULTS;
 	}
-	
 }

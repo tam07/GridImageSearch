@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Google Image Searcher</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="query_hint">Enter image search</string>
+    <string name="title_activity_image_display">ImageDisplayActivity</string>
+    <string name="title_activity_search_options">SearchOptionsActivity</string>
+    
+    <string name="SearchOpLabel">Advanced search options</string>
+    <string name="ImgSizeLabel">Image Size</string>
+    <string name="ColorFilterLabel">Color Filter</string>
+    <string name="SiteFilterLabel">Site filter 727</string>
+    
+    <string name="LoadMoreBtnText">Load More</string>
+    
+    <string-array name="imgSize">
+        <item>icon</item>
+        <item>small</item>
+        <item>medium</item>
+        <item>large</item>
+        <item>xlarge</item>
+        <item>xxlarge</item>
+        <item>huge</item>
+    </string-array>
+       
+    <string-array name="color">
+        <item>black</item>
+        <item>blue</item>
+        <item>brown</item>
+        <item>gray</item>
+        <item>green</item>
+        <item>orange</item>
+        <item>pink</item>
+    </string-array>
+    
+    <string-array name="imgType">
+        <item>face</item>
+        <item>photo</item>
+        <item>clipart</item>
+        <item>lineart</item>
+    </string-array>
+        <string name="ColorLabel">Color Filter</string>
+        <string name="ImageTypeLabel">Image Type</string>
+        <string name="submitButton">Submit</string>
+        <string name="searchBtnLabel">Search</string>
+    
+
+</resources>

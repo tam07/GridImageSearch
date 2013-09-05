@@ -1,0 +1,96 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".SearchOptionsActivity" >
+
+    <TextView
+        android:id="@+id/AdvSearchOp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/SearchOpLabel"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/imgSizeLabel_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/AdvSearchOp"
+        android:text="@string/ImgSizeLabel" />
+    
+    <Spinner
+        android:id="@+id/imgSizeSpinner_ID"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/imgSizeLabel_ID" 
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/AdvSearchOp"/>
+       
+    <TextView
+        android:id="@+id/colorLabel_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_below="@+id/imgSizeLabel_ID"
+        android:text="@string/ColorLabel" />   
+        
+     <Spinner
+        android:id="@+id/colorSpinner_ID"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/colorLabel_ID"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/imgSizeLabel_ID" /> 
+        
+     <TextView
+        android:id="@+id/imgTypeLabel_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_below="@+id/colorLabel_ID"
+        android:text="@string/ImageTypeLabel" />
+
+    <Spinner
+        android:id="@+id/imgTypeSpinner_ID"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/imgTypeLabel_ID"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/colorLabel_ID" />
+
+    <TextView
+        android:id="@+id/siteLabel_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_below="@+id/imgTypeLabel_ID"
+        android:text="@string/SiteFilterLabel" />
+    
+    <EditText
+        android:id="@+id/siteTextField_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/siteLabel_ID"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/imgTypeLabel_ID" 
+        android:ems="10" />
+    <!-- 
+    <Button
+        android:id="@+id/submitButtonID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/siteTextField_ID"
+        android:layout_below="@+id/siteLabel_ID"
+        android:layout_marginTop="34dp"
+        android:text="@string/submitButton" /> -->
+
+</RelativeLayout>

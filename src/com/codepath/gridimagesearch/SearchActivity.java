@@ -43,6 +43,25 @@ public class SearchActivity extends Activity {
     
     static final int NUM_RESULTS = 8;
     
+    static final int REQUEST_CODE = 100;
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	// TODO Auto-generated method stub
+    	//super.onActivityResult(requestCode, resultCode, data);
+    	
+    	
+    	if (resultCode == RESULT_OK && requestCode == REQUEST_CODE)
+    	{
+    		/* GETTING search options from SearchOptionsActivity bundle */
+    		imgSize = data.getStringExtra("selectedImgSize");
+    		color = data.getStringExtra("selectedColor");
+    		imgType = data.getStringExtra("selectedImgType");
+    		site = data.getStringExtra("writtenSite");
+    	}
+    }
+    
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,11 +69,7 @@ public class SearchActivity extends Activity {
 		setupViews();
 		
 		//imgSize = getIntent().getStringExtra("imageSize");
-		/* GETTING search options from SearchOptionsActivity bundle */
-		imgSize = getIntent().getStringExtra("selectedImgSize");
-		color = getIntent().getStringExtra("selectedColor");
-		imgType = getIntent().getStringExtra("imgType");
-		site = getIntent().getStringExtra("writtenSite");
+		
 		
 		imageAdapter = new ImageResultArrayAdapter(this, imageResults);
 		gvResults.setAdapter(imageAdapter);
@@ -65,10 +80,9 @@ public class SearchActivity extends Activity {
 				// INTENT is a request to bring up an activity.  Second arg is the class of the activity you want to bring up
 				Intent i = new Intent(getApplicationContext(), ImageDisplayActivity.class);
 				ImageResult imageResult = imageResults.get(position);
-				//i.putExtra("url", imageResult.getFullUrl());
 				i.putExtra("result", imageResult);
-				// fire intent, pass in extras
 				startActivity(i);
+
 				// CODING INSTRUCTIONS: now go to activity you want to display, ImageDisplayActivity
 			}
 			
@@ -83,10 +97,13 @@ public class SearchActivity extends Activity {
 		return true;
 	}
 	
+	// THROUGH THE XML, android:onClick in menu dir-->search.xml
 	public void onSettingsAction(MenuItem mi) {
-		Intent i = new Intent(getApplicationContext(), SearchOptionsActivity.class);
-		startActivity(i);
-
+		/*Intent i = new Intent(getApplicationContext(), SearchOptionsActivity.class);
+		startActivity(i);*/
+		Intent i = new Intent(this, SearchOptionsActivity.class);
+		i.putExtra("mode", 2);
+		startActivityForResult(i, REQUEST_CODE);
 	}
 	
 	public void setupViews() {
@@ -110,29 +127,28 @@ public class SearchActivity extends Activity {
 		// https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=android gives a proper response
 		
 		String requestStr = "https://ajax.googleapis.com/ajax/services/search/images?rsz=" + NUM_RESULTS + "&start=0&v=1.0";
-		// if one of the options wasn't specified in SearchOptionsActivity, use default req str
-		if(imgSize == null || color == null || imgType == null || site == null)
-		{
-			 requestStr+= "&q=" + encodedSearchTerm;
-		}
-		else
-		{
-		    String imgSizeAttr = "&imgsz=" + imgSize;
-		    String imgColorAttr = "&imgcolor=" + color;
-		    String imgTypeAttr = "&imgtype=" + imgType;
-	        String siteAttr = "&as_sitesearch=" + site;
-	        requestStr+= imgSizeAttr + imgColorAttr + imgTypeAttr + siteAttr + "&q=" + encodedSearchTerm;
-		}
 		
+		
+		/* upon return to the Search activity, onCreate gets called and we ingest the bundle data into our instance variables
+		 * if the option was set, it won't be "".  add "&imgsz=<imgSize>" to the request string */
+		if(!imgSize.equals(""))
+		    requestStr+= "&imgsz=" + imgSize;
+		if(!color.equals(""))
+			requestStr+="&imgcolor=" + color;
+		if(!imgType.equals(""))
+			requestStr+="&imgtype=" + imgType;
+		if(site != null)
+			requestStr+="&as_sitesearch=" + site;
+		
+		// add the query string to the request string
+		requestStr+= "&q=" + encodedSearchTerm;
+		System.out.println("The request str: " + requestStr);
+		loadImagesHelper(requestStr);
 		/* gives null response
 		 * String requestStr = "https://ajax.googleapis.com/ajax/services/search/images?rsz=&&start=0&v=1.0&q=" + encodedSearchTerm;
 		 */
 		/*String requestStr = "https://ajax.googleapis.com/ajax/services/search/images?rsz=8&start=0&v=1.0&imgsz=" +
 		                    imgSize + "&as_sitesearch=flickr.com&q=" + encodedSearchTerm;*/
-		
-		
-		
-		numImgsLoaded+=NUM_RESULTS;
 	} //close onImageSearchView
 	
 	
@@ -148,7 +164,7 @@ public class SearchActivity extends Activity {
 		else
 		{
 			String requestStr = "https://ajax.googleapis.com/ajax/services/search/images?rsz=" +
-		                        NUM_RESULTS + "&start=" + numImgsLoaded + "&v=1.0";
+		                        NUM_RESULTS + "&start=" + numImgsLoaded + "&v=1.0" + "&q=" + encodedSearchTerm;
 			loadImagesHelper(requestStr);
 		}	
 	}

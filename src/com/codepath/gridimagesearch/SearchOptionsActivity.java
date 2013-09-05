@@ -11,12 +11,13 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class SearchOptionsActivity extends Activity implements OnItemSelectedListener, OnEditorActionListener {
+public class SearchOptionsActivity extends Activity implements OnItemSelectedListener, OnEditorActionListener, OnClickListener {
 	private Spinner imgSizeSpinner;
 	private Spinner colorSpinner;
 	private Spinner imgTypeSpinner;
@@ -30,6 +31,8 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
     
     // value obtained from textfield
     private String selectedSite;
+    
+    private Button saveButton;
     
     // imgSize obtained by implementing OnItemSelectedListener's onItemSelected(...) method 
     public void setSelectedImgSize(Object imgSize) {
@@ -103,6 +106,8 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
 		siteTextField = (EditText)findViewById(R.id.siteTextField_ID);
         siteTextField.setOnEditorActionListener(this);
 		
+		saveButton = (Button)findViewById(R.id.saveButtonID);
+		saveButton.setOnClickListener(this);
 		
       
 	}
@@ -132,29 +137,44 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
 		//Object item = parent.getItemAtPosition(position);
 		/* Find associated spinner and call that setter with the value selected */
 		if(parent.getId() == imgSizeSpinner.getId())
-			setSelectedImgSize(parent.getItemAtPosition(position));
+		{
+		    String imgSizeStr = parent.getItemAtPosition(position).toString();
+			setSelectedImgSize(imgSizeStr);
+		}
 		else if(parent.getId() == colorSpinner.getId())
-			setSelectedColor(parent.getItemAtPosition(position));
+		{
+			String colorStr = parent.getItemAtPosition(position).toString();
+			setSelectedColor(colorStr);
+		}
 		else if(parent.getId() == imgTypeSpinner.getId())
-			setSelectedImgType(parent.getItemAtPosition(position));
+		{
+			String imgTypeStr = parent.getItemAtPosition(position).toString();
+			setSelectedImgType(imgTypeStr);
+	    }
 	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
 	}
 
-	/*@Override
+
+	@Override
 	public void onClick(View v) {
 		
-		String selectedSite = (String) siteTextField.getText();
+		String selectedSite = siteTextField.getText().toString();
 		 
-		Intent intent = new Intent(this, SearchActivity.class);
-	    intent.putExtra("selectedImgSize", getSelectedImgSize());
-	    intent.putExtra("selectedColor", getSelectedColor());
-	    intent.putExtra("selectedImgType", getSelectedImgType());
+		Intent intent = new Intent();
+		String selectedImgSizeStr = getSelectedImgSize();
+		String selectedColorStr = getSelectedColor();
+		String selectedImgTypeStr = getSelectedImgType();
+		
+	    intent.putExtra("selectedImgSize", selectedImgSizeStr);
+	    intent.putExtra("selectedColor", selectedColorStr);
+	    intent.putExtra("selectedImgType", selectedImgTypeStr);
 	    intent.putExtra("writtenSite", selectedSite);
-	    startActivity(intent);
-	}*/
+	    setResult(RESULT_OK, intent); 
+	    super.finish();
+	}
 
 	
 	@Override
@@ -163,17 +183,11 @@ public class SearchOptionsActivity extends Activity implements OnItemSelectedLis
         if(actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_DOWN)
         {
 		    selectedSite = (String) v.getText();
-		 
-		    Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
-	        intent.putExtra("selectedImgSize", getSelectedImgSize());
-	        intent.putExtra("selectedColor", getSelectedColor());
-	        intent.putExtra("selectedImgType", getSelectedImgType());
-	        intent.putExtra("writtenSite", selectedSite);
-	        startActivity(intent);
         }
 		return true;
 	}
 
 
+    
 
 }

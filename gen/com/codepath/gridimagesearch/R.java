@@ -29,10 +29,11 @@ public final class R {
     public static final class drawable {
         public static final int cool_settings_icon=0x7f020000;
         public static final int ic_launcher=0x7f020001;
+        public static final int ic_settings=0x7f020002;
     }
     public static final class id {
         public static final int AdvSearchOp=0x7f090005;
-        public static final int action_settings=0x7f09000e;
+        public static final int action_settings=0x7f09000f;
         public static final int btnLoadMore=0x7f090004;
         public static final int btnSearch=0x7f090002;
         public static final int colorLabel_ID=0x7f090008;
@@ -44,6 +45,7 @@ public final class R {
         public static final int imgTypeLabel_ID=0x7f09000a;
         public static final int imgTypeSpinner_ID=0x7f09000b;
         public static final int ivResult=0x7f090000;
+        public static final int saveButtonID=0x7f09000e;
         public static final int siteLabel_ID=0x7f09000c;
         public static final int siteTextField_ID=0x7f09000d;
     }
@@ -70,6 +72,7 @@ public final class R {
         public static final int app_name=0x7f050000;
         public static final int hello_world=0x7f050002;
         public static final int query_hint=0x7f050003;
+        public static final int saveButtonText=0x7f05000f;
         public static final int searchBtnLabel=0x7f05000e;
         public static final int submitButton=0x7f05000d;
         public static final int title_activity_image_display=0x7f050004;

@@ -93,4 +93,13 @@
         android:layout_marginTop="34dp"
         android:text="@string/submitButton" /> -->
 
+    <Button
+        android:id="@+id/saveButtonID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/siteTextField_ID"
+        android:layout_below="@+id/siteLabel_ID"
+        android:layout_marginTop="48dp"
+        android:text="@string/saveButtonText" />
+
 </RelativeLayout>
